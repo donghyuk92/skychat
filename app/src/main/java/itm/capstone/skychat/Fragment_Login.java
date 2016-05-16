@@ -1,12 +1,15 @@
 package itm.capstone.skychat;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import android.content.Intent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -16,21 +19,38 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 import info.androidhive.webgroupchat.R;
 
-public class LoginActivity extends AppCompatActivity {
-    private static final String TAG = "LoginActivity";
+public class Fragment_Login extends Fragment {
+
+    private static final String TAG = "Fragment_Login";
     private static final int REQUEST_SIGNUP = 0;
 
     @Bind(R.id.input_email) EditText _emailText;
     @Bind(R.id.input_password) EditText _passwordText;
     @Bind(R.id.btn_login) Button _loginButton;
     @Bind(R.id.link_signup) TextView _signupLink;
-    
+
+    Context ctx;
+
+    public Fragment_Login() {
+
+    }
+
+    public static Fragment_Login newInstance(Context ctx) {
+        Fragment_Login f = new Fragment_Login();
+        f.ctx = ctx;
+        return f;
+    }
+
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        ButterKnife.bind(this);
-        
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_login, container, false);
+        ButterKnife.bind(view);
+
+        _emailText = (EditText) view.findViewById(R.id.input_email);
+        _passwordText = (EditText) view.findViewById(R.id.input_password);
+        _loginButton = (Button) view.findViewById(R.id.btn_login);
+        _signupLink = (TextView) view.findViewById(R.id.link_signup);
+
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -44,10 +64,11 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Start the Signup activity
-                Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+                Intent intent = new Intent(ctx, SignupActivity.class);
                 startActivityForResult(intent, REQUEST_SIGNUP);
             }
         });
+        return view;
     }
 
     public void login() {
@@ -60,8 +81,7 @@ public class LoginActivity extends AppCompatActivity {
 
         _loginButton.setEnabled(false);
 
-        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
-                R.style.AppTheme_Dark_Dialog);
+        final ProgressDialog progressDialog = new ProgressDialog(getActivity(), R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
@@ -84,30 +104,25 @@ public class LoginActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SIGNUP) {
-            if (resultCode == RESULT_OK) {
+            if (resultCode == getActivity().RESULT_OK) {
 
                 // TODO: Implement successful signup logic here
                 // By default we just finish the Activity and log them in automatically
-                this.finish();
+                //this.finish();
             }
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        // Disable going back to the MainActivity
-        moveTaskToBack(true);
-    }
-
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
-        finish();
+        getFragmentManager().beginTransaction().remove(this).commit();
+        getFragmentManager().popBackStack();
     }
 
     public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(ctx, "Login failed", Toast.LENGTH_LONG).show();
 
         _loginButton.setEnabled(true);
     }

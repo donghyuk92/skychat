@@ -3,6 +3,7 @@ package itm.capstone.skychat;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -85,11 +86,21 @@ public class MainActivity extends AppCompatActivity {
     * is selected.
     **/
     private void selectItemFromDrawer(int position) {
-        Fragment fragment = new Fragment_Preferences();
-
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.mainContent, fragment)
-                .commit();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        Fragment fragment = null;
+        switch(position) {
+            case 0: // Login
+                fragment = (Fragment) Fragment_Login.newInstance(getBaseContext());
+                break;
+            case 1: // Chat
+                fragment = (Fragment) Fragment_Chat.newInstance(getBaseContext());
+                break;
+        }
+        if(fragment != null) {
+            ft.addToBackStack(null);
+            ft.replace(R.id.mainContent, fragment).commit();
+        }
 
         mDrawerList.setItemChecked(position, true);
         setTitle(mNavItems.get(position).mTitle);

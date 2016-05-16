@@ -79,7 +79,7 @@ public class Fragment_Chat extends Fragment {
         inputMsg = (EditText) view.findViewById(R.id.inputMsg);
         listViewMessages = (ListView) view.findViewById(R.id.list_view_messages);
 
-        utils = new Utils(getActivity());
+        utils = new Utils(ctx);
 
         // Getting the person name from previous screen
         Intent i = getActivity().getIntent();
@@ -101,7 +101,7 @@ public class Fragment_Chat extends Fragment {
 
         listMessages = new ArrayList<Message>();
 
-        msgadapter = new Adapter_MessagesList(getContext(), listMessages);
+        msgadapter = new Adapter_MessagesList(ctx, listMessages);
         listViewMessages.setAdapter(msgadapter);
 
         /**

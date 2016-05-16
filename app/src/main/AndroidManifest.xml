@@ -15,10 +15,16 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.AppCompat" >
+        <!--
         <activity
             android:name="itm.capstone.skychat.NameActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan" >
+        </activity>
+        -->
+        <activity
+            android:name="itm.capstone.skychat.MainActivity"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,23 +32,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="itm.capstone.skychat.MainActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name="itm.capstone.skychat.Navigation"
-            android:screenOrientation="portrait">
-
-        </activity>
-        <activity
-            android:name="itm.capstone.skychat.LoginActivity"
-            android:screenOrientation="portrait">
-
-        </activity>
-        <activity
             android:name="itm.capstone.skychat.SignupActivity"
             android:screenOrientation="portrait">
-
         </activity>
     </application>
 
