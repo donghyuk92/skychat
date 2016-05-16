@@ -15,12 +15,12 @@ import info.androidhive.webgroupchat.R;
 /**
  * Created by User on 2016-05-15.
  */
-public class DrawerListAdapter extends BaseAdapter {
+public class Adapter_DrawerList extends BaseAdapter {
 
     Context mContext;
     ArrayList<NavItem> mNavItems;
 
-    public DrawerListAdapter(Context context, ArrayList<NavItem> navItems) {
+    public Adapter_DrawerList(Context context, ArrayList<NavItem> navItems) {
         mContext = context;
         mNavItems = navItems;
     }

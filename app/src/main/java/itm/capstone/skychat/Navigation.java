@@ -1,6 +1,5 @@
 package itm.capstone.skychat;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,16 +7,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -52,7 +46,7 @@ public class Navigation extends AppCompatActivity {
         // Populate the Navigtion Drawer with options
         mDrawerPane = (RelativeLayout) findViewById(R.id.drawerPane);
         mDrawerList = (ListView) findViewById(R.id.navList);
-        DrawerListAdapter adapter = new DrawerListAdapter(this, mNavItems);
+        Adapter_DrawerList adapter = new Adapter_DrawerList(this, mNavItems);
         mDrawerList.setAdapter(adapter);
 
         // Drawer Item click listeners
@@ -60,7 +54,6 @@ public class Navigation extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectItemFromDrawer(position);
-                setTitle(mNavItems.get(position).mTitle);
             }
         });
 
@@ -92,7 +85,7 @@ public class Navigation extends AppCompatActivity {
 * is selected.
 * */
     private void selectItemFromDrawer(int position) {
-        Fragment fragment = new PreferencesFragment();
+        Fragment fragment = new Fragment_Preferences();
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.mainContent, fragment)

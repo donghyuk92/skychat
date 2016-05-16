@@ -14,12 +14,12 @@ import java.util.List;
 import info.androidhive.webgroupchat.R;
 import itm.capstone.skychat.other.Message;
 
-public class MessagesListAdapter extends BaseAdapter {
+public class Adapter_MessagesList extends BaseAdapter {
 
 	private Context context;
 	private List<Message> messagesItems;
 
-	public MessagesListAdapter(Context context, List<Message> navDrawerItems) {
+	public Adapter_MessagesList(Context context, List<Message> navDrawerItems) {
 		this.context = context;
 		this.messagesItems = navDrawerItems;
 	}

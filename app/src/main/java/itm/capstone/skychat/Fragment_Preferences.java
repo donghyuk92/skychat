@@ -11,10 +11,10 @@ import info.androidhive.webgroupchat.R;
 /**
  * Created by User on 2016-05-14.
  */
-public class PreferencesFragment extends Fragment {
+public class Fragment_Preferences extends Fragment {
 
 
-    public PreferencesFragment() {
+    public Fragment_Preferences() {
         // Required empty public constructor
     }
 

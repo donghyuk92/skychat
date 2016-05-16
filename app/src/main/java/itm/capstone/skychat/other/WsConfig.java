@@ -1,5 +1,5 @@
 package itm.capstone.skychat.other;
 
 public class WsConfig {
-	public static final String URL_WEBSOCKET = "ws://10.10.20.34:8080/WebMobileGroupChatServer/chat?name=";
+	public static final String URL_WEBSOCKET = "ws://117.17.187.158:8080/WebMobileGroupChatServer/chat?name=";
 }
