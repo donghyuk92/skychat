@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-        mNavItems.add(new NavItem("Home", "Meetup destination", R.drawable.bg_messages));
-        mNavItems.add(new NavItem("Preferences", "Change your preferences", R.drawable.drawer_shadow));
+        mNavItems.add(new NavItem("Login", "로그인 하세요", R.drawable.bg_messages));
+        mNavItems.add(new NavItem("Chat", "채팅 하세요", R.drawable.drawer_shadow));
 // DrawerLayout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
@@ -78,8 +78,7 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment = Fragment_Chat.newInstance(getApplicationContext());
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.mainContent, fragment)
-                .addToBackStack(null).commit();
+        fragmentManager.beginTransaction().replace(R.id.mainContent, fragment, "fragment_id").commit();
 	}
 
     /** Called when a particular item from the navigation drawer
@@ -94,6 +93,10 @@ public class MainActivity extends AppCompatActivity {
                 fragment = (Fragment) Fragment_Login.newInstance(getBaseContext());
                 break;
             case 1: // Chat
+                Fragment tmp_fragment = fragmentManager.findFragmentByTag("fragment_id");
+                if (tmp_fragment != null && tmp_fragment.isVisible()) {
+                    break;
+                }
                 fragment = (Fragment) Fragment_Chat.newInstance(getBaseContext());
                 break;
         }

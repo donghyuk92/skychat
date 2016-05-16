@@ -7,6 +7,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,8 +73,12 @@ public class Fragment_Chat extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
         btnSend = (Button) view.findViewById(R.id.btnSend);
         inputMsg = (EditText) view.findViewById(R.id.inputMsg);
@@ -104,66 +109,72 @@ public class Fragment_Chat extends Fragment {
         msgadapter = new Adapter_MessagesList(ctx, listMessages);
         listViewMessages.setAdapter(msgadapter);
 
-        /**
-         * Creating web socket client. This will have callback methods
-         * */
-        try {
-            client = new WebSocketClient(URI.create(WsConfig.URL_WEBSOCKET
-                    + URLEncoder.encode(name,"UTF-8")), new WebSocketClient.Listener() {
-                @Override
-                public void onConnect() {
+        if(client == null) {
+            /**
+             * Creating web socket client. This will have callback methods
+             * */
+            try {
+                client = new WebSocketClient(URI.create(WsConfig.URL_WEBSOCKET
+                        + URLEncoder.encode(name, "UTF-8")), new WebSocketClient.Listener() {
+                    @Override
+                    public void onConnect() {
 
-                }
+                    }
 
-                /**
-                 * On receiving the message from web socket server
-                 * */
-                @Override
-                public void onMessage(String message) {
-                    Log.d(TAG, String.format("Got string message! %s", message));
+                    /**
+                     * On receiving the message from web socket server
+                     */
+                    @Override
+                    public void onMessage(String message) {
+                        Log.d(TAG, String.format("Got string message! %s", message));
 
-                    parseMessage(message);
+                        parseMessage(message);
 
-                }
+                    }
 
-                @Override
-                public void onMessage(byte[] data) {
-                    Log.d(TAG, String.format("Got binary message! %s",
-                            bytesToHex(data)));
+                    @Override
+                    public void onMessage(byte[] data) {
+                        Log.d(TAG, String.format("Got binary message! %s",
+                                bytesToHex(data)));
 
-                    // Message will be in JSON format
-                    parseMessage(bytesToHex(data));
-                }
+                        // Message will be in JSON format
+                        parseMessage(bytesToHex(data));
+                    }
 
-                /**
-                 * Called when the connection is terminated
-                 * */
-                @Override
-                public void onDisconnect(int code, String reason) {
+                    /**
+                     * Called when the connection is terminated
+                     */
+                    @Override
+                    public void onDisconnect(int code, String reason) {
 
-                    String message = String.format(Locale.US,
-                            "Disconnected! Code: %d Reason: %s", code, reason);
+                        String message = String.format(Locale.US,
+                                "Disconnected! Code: %d Reason: %s", code, reason);
 
-                    showToast(message);
+                        showToast(message);
 
-                    // clear the session id from shared preferences
-                    utils.storeSessionId(null);
-                }
+                        // clear the session id from shared preferences
+                        utils.storeSessionId(null);
+                    }
 
-                @Override
-                public void onError(Exception error) {
-                    Log.e(TAG, "Error! : " + error);
+                    @Override
+                    public void onError(Exception error) {
+                        Log.e(TAG, "Error! : " + error);
 
-                    showToast("Error! : " + error);
-                }
+                        showToast("Error! : " + error);
+                    }
 
-            }, null);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+                }, null);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            Log.d("TAG", client.toString());
         }
-
+        Log.d("TAG", client.toString());
         client.connect();
+        Log.d("TAG", client.toString());
         // Inflate the layout for this fragment
+        ((AppCompatActivity)getActivity()).getSupportActionBar().show();
+
         return view;
     }
 
@@ -239,6 +250,14 @@ public class Fragment_Chat extends Fragment {
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(client != null & client.isConnected()){
+            client.disconnect();
+        }
     }
 
     @Override
