@@ -30,11 +30,18 @@
             android:orientation="horizontal"
             android:weightSum="3" >
 
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="match_parent"
+                android:id="@+id/emoticons"
+                android:src="@drawable/ic_smiley"
+                android:layout_weight="0.16" />
+
             <EditText
                 android:id="@+id/inputMsg"
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
-                android:layout_weight="2"
+                android:layout_weight="2.84"
                 android:background="@color/bg_msg_input"
                 android:textColor="@color/text_msg_input"
                 android:paddingLeft="6dp"
@@ -42,12 +49,12 @@
 
             <Button
                 android:id="@+id/btnSend"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:background="@color/bg_btn_join"
                 android:textColor="@color/white"
-                android:text="@string/btn_send" />
+                android:text="@string/btn_send"
+                android:layout_weight="0" />
         </LinearLayout>
 
     </LinearLayout>

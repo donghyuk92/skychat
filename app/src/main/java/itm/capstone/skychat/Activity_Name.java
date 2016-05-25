@@ -1,6 +1,5 @@
 package itm.capstone.skychat;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +10,7 @@ import android.widget.Toast;
 
 import info.androidhive.webgroupchat.R;
 
-public class NameActivity extends AppCompatActivity {
+public class Activity_Name extends AppCompatActivity {
 
 	private Button btnJoin;
 	private EditText txtName;
@@ -35,8 +34,8 @@ public class NameActivity extends AppCompatActivity {
 
 					String name = txtName.getText().toString().trim();
 
-					Intent intent = new Intent(NameActivity.this,
-							MainActivity.class);
+					Intent intent = new Intent(Activity_Name.this,
+							Activity_Main.class);
 					intent.putExtra("name", name);
 
 					startActivity(intent);

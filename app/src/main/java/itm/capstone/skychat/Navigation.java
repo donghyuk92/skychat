@@ -22,7 +22,7 @@ import info.androidhive.webgroupchat.R;
  */
 public class Navigation extends AppCompatActivity {
 
-    private static String TAG = MainActivity.class.getSimpleName();
+    private static String TAG = Activity_Main.class.getSimpleName();
 
     ListView mDrawerList;
     RelativeLayout mDrawerPane;

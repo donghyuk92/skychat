@@ -1,12 +1,15 @@
 package itm.capstone.skychat;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -62,6 +66,9 @@ public class Fragment_Chat extends Fragment {
 
     private WebSocketClient client;
 
+    int mStackLevel = 0;
+    public static final int DIALOG_FRAGMENT = 1;
+
     public Fragment_Chat() {
 
     }
@@ -75,6 +82,16 @@ public class Fragment_Chat extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            mStackLevel = savedInstanceState.getInt("level");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("level", mStackLevel);
     }
 
     @Override
@@ -172,6 +189,14 @@ public class Fragment_Chat extends Fragment {
         Log.d("TAG", client.toString());
         client.connect();
         Log.d("TAG", client.toString());
+
+        ImageView imageView = (ImageView) view.findViewById(R.id.emoticons);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialog(DIALOG_FRAGMENT);
+            }
+        });
         // Inflate the layout for this fragment
         ((AppCompatActivity)getActivity()).getSupportActionBar().show();
 
@@ -326,5 +351,42 @@ public class Fragment_Chat extends Fragment {
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
         }
         return new String(hexChars);
+    }
+
+    void showDialog(int type) {
+
+        mStackLevel++;
+
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        Fragment prev = getActivity().getSupportFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        switch (type) {
+
+            case DIALOG_FRAGMENT:
+
+                DialogFragment dialogFrag = Dialog_Emoticons.newInstance(123);
+                dialogFrag.setTargetFragment(this, DIALOG_FRAGMENT);
+                dialogFrag.show(getFragmentManager().beginTransaction(), "dialog");
+
+                break;
+        }
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode) {
+            case DIALOG_FRAGMENT:
+
+                if (resultCode == Activity.RESULT_OK) {
+                    // After Ok code.
+                } else if (resultCode == Activity.RESULT_CANCELED){
+                    // After Cancel code.
+                }
+
+                break;
+        }
     }
 }

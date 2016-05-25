@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.content.Intent;
@@ -64,7 +63,7 @@ public class Fragment_Login extends Fragment {
             @Override
             public void onClick(View v) {
                 // Start the Signup activity
-                Intent intent = new Intent(ctx, SignupActivity.class);
+                Intent intent = new Intent(ctx, Activity_Signup.class);
                 startActivityForResult(intent, REQUEST_SIGNUP);
             }
         });

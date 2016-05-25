@@ -31,4 +31,7 @@
     <color name="aluminum">#999999</color>
     <color name="base">#AAAAAA</color>
     <color name="iron">#CCCCCC</color>
+
+    <color name="horizontal_divider">#8f8f8f</color>
+    <color name="horizontal_vertical">#8f8f8f</color>
 </resources>

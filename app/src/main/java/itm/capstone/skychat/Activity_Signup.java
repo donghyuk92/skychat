@@ -14,8 +14,8 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 import info.androidhive.webgroupchat.R;
 
-public class SignupActivity extends AppCompatActivity {
-    private static final String TAG = "SignupActivity";
+public class Activity_Signup extends AppCompatActivity {
+    private static final String TAG = "Activity_Signup";
 
     @Bind(R.id.input_name) EditText _nameText;
     @Bind(R.id.input_email) EditText _emailText;
@@ -55,7 +55,7 @@ public class SignupActivity extends AppCompatActivity {
 
         _signupButton.setEnabled(false);
 
-        final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
+        final ProgressDialog progressDialog = new ProgressDialog(Activity_Signup.this,
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Creating Account...");

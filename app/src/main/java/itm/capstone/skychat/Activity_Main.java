@@ -18,10 +18,10 @@ import java.util.ArrayList;
 
 import info.androidhive.webgroupchat.R;
 
-public class MainActivity extends AppCompatActivity {
+public class Activity_Main extends AppCompatActivity {
 
 	// LogCat tag
-	private static final String TAG = MainActivity.class.getSimpleName();
+	private static final String TAG = Activity_Main.class.getSimpleName();
 
 
     ListView mDrawerList;
