@@ -38,6 +38,9 @@ public class Activity_Main extends AppCompatActivity {
 
         mNavItems.add(new NavItem("Login", "로그인 하세요", R.drawable.bg_messages));
         mNavItems.add(new NavItem("Chat", "채팅 하세요", R.drawable.drawer_shadow));
+        mNavItems.add(new NavItem("Mypage", "마이페이지", R.drawable.drawer_shadow));
+        mNavItems.add(new NavItem("Event", "이벤트", R.drawable.drawer_shadow));
+
 // DrawerLayout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
@@ -98,6 +101,14 @@ public class Activity_Main extends AppCompatActivity {
                     break;
                 }
                 fragment = (Fragment) Fragment_Chat.newInstance(getBaseContext());
+                break;
+            case 2: // Mypage
+                fragment = (Fragment) Fragment_Mypage.newInstance(getBaseContext());
+                break;
+            case 3: // Event
+                //fragment = (Fragment) Fragment_Event.newInstance(getBaseContext());
+                Dialog_Record dialog_record = Dialog_Record.newInstance(getBaseContext());
+                dialog_record.show(getSupportFragmentManager(),"dialog");
                 break;
         }
         if(fragment != null) {
