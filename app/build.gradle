@@ -26,4 +26,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:design:23.3.0'
     compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.vanniktech:emoji:0.3.0'
 }

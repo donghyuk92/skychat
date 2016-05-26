@@ -1,20 +1,19 @@
 package itm.capstone.skychat;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,6 +21,15 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.codebutler.android_websockets.WebSocketClient;
+import com.vanniktech.emoji.EmojiEditText;
+import com.vanniktech.emoji.EmojiPopup;
+import com.vanniktech.emoji.emoji.Emoji;
+import com.vanniktech.emoji.listeners.OnEmojiBackspaceClickListener;
+import com.vanniktech.emoji.listeners.OnEmojiClickedListener;
+import com.vanniktech.emoji.listeners.OnEmojiPopupDismissListener;
+import com.vanniktech.emoji.listeners.OnEmojiPopupShownListener;
+import com.vanniktech.emoji.listeners.OnSoftKeyboardCloseListener;
+import com.vanniktech.emoji.listeners.OnSoftKeyboardOpenListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,14 +51,17 @@ import itm.capstone.skychat.other.WsConfig;
  */
 public class Fragment_Chat extends Fragment {
 
-    // LogCat tag
-    private static final String TAG = Fragment_Chat.class.getSimpleName();
+    private String TAG = "TAG";
 
     Context ctx;
     // Chat messages list adapter
     private Adapter_MessagesList msgadapter;
     private List<Message> listMessages;
     private ListView listViewMessages;
+    private EmojiEditText emojiEditText;
+    private EmojiPopup    emojiPopup;
+    private ImageView     emojiButton;
+    private ViewGroup     rootView;
 
     private Utils utils;
 
@@ -62,12 +73,9 @@ public class Fragment_Chat extends Fragment {
             TAG_MESSAGE = "message", TAG_EXIT = "exit";
 
     private Button btnSend;
-    private EditText inputMsg;
+    //private EditText inputMsg;
 
     private WebSocketClient client;
-
-    int mStackLevel = 0;
-    public static final int DIALOG_FRAGMENT = 1;
 
     public Fragment_Chat() {
 
@@ -80,26 +88,15 @@ public class Fragment_Chat extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            mStackLevel = savedInstanceState.getInt("level");
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("level", mStackLevel);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
         btnSend = (Button) view.findViewById(R.id.btnSend);
-        inputMsg = (EditText) view.findViewById(R.id.inputMsg);
+        //inputMsg = (EditText) view.findViewById(R.id.inputMsg);
         listViewMessages = (ListView) view.findViewById(R.id.list_view_messages);
+        emojiEditText = (EmojiEditText) view.findViewById(R.id.emojiEditText);
+        emojiButton = (ImageView) view.findViewById(R.id.emoticons);
+        emojiPopup = EmojiPopup.Builder.fromRootView(view).build(emojiEditText);
+        rootView = (ViewGroup) view.findViewById(R.id.main_activity_root_view);
 
         utils = new Utils(ctx);
 
@@ -113,11 +110,12 @@ public class Fragment_Chat extends Fragment {
             @Override
             public void onClick(View v) {
                 // Sending message to web socket server
-                sendMessageToServer(utils.getSendMessageJSON(inputMsg.getText()
+                sendMessageToServer(utils.getSendMessageJSON(emojiEditText.getText()
                         .toString()));
 
+                emojiPopup.dismiss();
                 // Clearing the input filed once message was sent
-                inputMsg.setText("");
+                emojiEditText.setText("");
             }
         });
 
@@ -194,9 +192,12 @@ public class Fragment_Chat extends Fragment {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDialog(DIALOG_FRAGMENT);
+                emojiPopup.toggle(); // Toggles visibility of the Popup
             }
         });
+
+        setUpEmojiPopup();
+
         // Inflate the layout for this fragment
         ((AppCompatActivity)getActivity()).getSupportActionBar().show();
 
@@ -353,40 +354,37 @@ public class Fragment_Chat extends Fragment {
         return new String(hexChars);
     }
 
-    void showDialog(int type) {
-
-        mStackLevel++;
-
-        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        Fragment prev = getActivity().getSupportFragmentManager().findFragmentByTag("dialog");
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        ft.addToBackStack(null);
-
-        switch (type) {
-
-            case DIALOG_FRAGMENT:
-
-                DialogFragment dialogFrag = Dialog_Emoticons.newInstance(123);
-                dialogFrag.setTargetFragment(this, DIALOG_FRAGMENT);
-                dialogFrag.show(getFragmentManager().beginTransaction(), "dialog");
-
-                break;
-        }
-    }
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch(requestCode) {
-            case DIALOG_FRAGMENT:
-
-                if (resultCode == Activity.RESULT_OK) {
-                    // After Ok code.
-                } else if (resultCode == Activity.RESULT_CANCELED){
-                    // After Cancel code.
-                }
-
-                break;
-        }
+    private void setUpEmojiPopup() {
+        emojiPopup = EmojiPopup.Builder.fromRootView(rootView).setOnEmojiBackspaceClickListener(new OnEmojiBackspaceClickListener() {
+            @Override
+            public void onEmojiBackspaceClicked(final View v) {
+                Log.d("MainActivity", "Clicked on Backspace");
+            }
+        }).setOnEmojiClickedListener(new OnEmojiClickedListener() {
+            @Override
+            public void onEmojiClicked(final Emoji emoji) {
+                Log.d("MainActivity", "Clicked on emoji");
+            }
+        }).setOnEmojiPopupShownListener(new OnEmojiPopupShownListener() {
+            @Override
+            public void onEmojiPopupShown() {
+                emojiButton.setImageResource(R.drawable.ic_keyboard_grey_500_36dp);
+            }
+        }).setOnSoftKeyboardOpenListener(new OnSoftKeyboardOpenListener() {
+            @Override
+            public void onKeyboardOpen(final int keyBoardHeight) {
+                Log.d("MainActivity", "Opened soft keyboard");
+            }
+        }).setOnEmojiPopupDismissListener(new OnEmojiPopupDismissListener() {
+            @Override
+            public void onEmojiPopupDismiss() {
+                emojiButton.setImageResource(R.drawable.emoji_people);
+            }
+        }).setOnSoftKeyboardCloseListener(new OnSoftKeyboardCloseListener() {
+            @Override
+            public void onKeyboardClose() {
+                emojiPopup.dismiss();
+            }
+        }).build(emojiEditText);
     }
 }
