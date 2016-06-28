@@ -5,9 +5,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,13 +26,13 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import info.androidhive.webgroupchat.R;
+import itm.capstone.skychat.other.WsConfig;
 
 /**
  * Created by User on 2016-05-28.
  */
 public class Fragment_Channellist extends Fragment {
 
-    String myJSON;
     Context ctx;
     private static final String TAG_RESULTS="result";
     private static final String TAG_CHANNELID = "channel_id";
@@ -56,8 +58,8 @@ public class Fragment_Channellist extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        get_Data("http://117.17.187.60/ChatroomList.php");
-        Toast.makeText(getContext(), myJSON, Toast.LENGTH_SHORT).show();
+        Log.d("TAGTAG","http://" + WsConfig.IP + " /ChatroomList.php");
+        get_Data("http://" + WsConfig.IP + "/ChatroomList.php");
     }
 
     @Override
@@ -67,12 +69,21 @@ public class Fragment_Channellist extends Fragment {
         listview = (ListView) view.findViewById(R.id.chatlist) ;
         //chatroomlist = new ArrayList<ChattingRoom>();
         Adapter = new ListViewAdapter();
+
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ChattingRoom room = (ChattingRoom) Adapter.getItem(position);
+                String room_id = room.getChannel_id();
+                Toast.makeText(ctx, room_id, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         return view;
     }
-    protected void makeChatroom(){
+    protected void makeChatroom(String json){
         try {
-            Toast.makeText(getContext(),myJSON,Toast.LENGTH_SHORT);
-            JSONArray jarray = new JSONArray(myJSON);
+            JSONArray jarray = new JSONArray(json);
 
             for(int i=0;i<jarray.length();i++){
                 JSONObject c = jarray.getJSONObject(i);
@@ -96,39 +107,6 @@ public class Fragment_Channellist extends Fragment {
     }
 
     public void get_Data (String url){
-        class GetDataJSON extends AsyncTask<String, Void, String> {
-
-            @Override
-            protected String doInBackground(String... params) {
-
-                String uri = params[0];
-
-                BufferedReader bufferedReader = null;
-                try {
-                    URL url = new URL(uri);
-                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                    StringBuilder sb = new StringBuilder();
-
-                    bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-
-                    String json;
-                    while((json = bufferedReader.readLine())!= null){
-                        sb.append(json+"\n");
-                    }
-
-                    return sb.toString().trim();
-
-                }catch(Exception e){
-                    return null;
-                }
-            }
-
-            @Override
-            protected void onPostExecute(String result){
-                myJSON=result;
-                makeChatroom();
-            }
-        }
         GetDataJSON g = new GetDataJSON();
         g.execute(url);
     }
@@ -176,7 +154,6 @@ public class Fragment_Channellist extends Fragment {
         }
 
         public String getChannelId(int position){
-
             String c_id = listViewItemList.get(position).getChannel_id();
             return  c_id;
         }
@@ -199,4 +176,37 @@ public class Fragment_Channellist extends Fragment {
         }
     }
 
+    class GetDataJSON extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String uri = params[0];
+
+            BufferedReader bufferedReader = null;
+            try {
+                URL url = new URL(uri);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                StringBuilder sb = new StringBuilder();
+
+                bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String json;
+                while((json = bufferedReader.readLine())!= null){
+                    sb.append(json+"\n");
+                }
+
+                return sb.toString().trim();
+
+            }catch(Exception e){
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result){
+            Log.d("TAGTAG", result);
+            makeChatroom(result);
+        }
+    }
 }
