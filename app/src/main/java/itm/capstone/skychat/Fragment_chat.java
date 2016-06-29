@@ -59,11 +59,13 @@ public class Fragment_Chat extends Fragment {
     private List<Message> listMessages;
     private ListView listViewMessages;
     private EmojiEditText emojiEditText;
-    private EmojiPopup    emojiPopup;
-    private ImageView     emojiButton;
-    private ViewGroup     rootView;
+    private EmojiPopup emojiPopup;
+    private ImageView emojiButton;
+    private ViewGroup rootView;
 
     private Utils utils;
+
+    private String ch_id = null;
 
     // Client name
     private String name = null;
@@ -78,11 +80,11 @@ public class Fragment_Chat extends Fragment {
     private WebSocketClient client;
 
     public Fragment_Chat() {
-
     }
 
-    public static Fragment_Chat newInstance(Context ctx) {
+    public static Fragment_Chat newInstance(Context ctx, String ch_id) {
         Fragment_Chat f = new Fragment_Chat();
+        f.ch_id = ch_id;
         f.ctx = ctx;
         return f;
     }
@@ -102,8 +104,7 @@ public class Fragment_Chat extends Fragment {
 
         // Getting the person name from previous screen
         Intent i = getActivity().getIntent();
-        name = "test";
-        //name = i.getStringExtra("name");
+        name = i.getStringExtra("name");
 
         btnSend.setOnClickListener(new View.OnClickListener() {
 
@@ -124,13 +125,19 @@ public class Fragment_Chat extends Fragment {
         msgadapter = new Adapter_MessagesList(ctx, listMessages);
         listViewMessages.setAdapter(msgadapter);
 
-        if(client == null) {
+
+
+        if (client == null) {
             /**
              * Creating web socket client. This will have callback methods
              * */
+
             try {
+                Log.d("TAG",WsConfig.URL_WEBSOCKET
+                        + URLEncoder.encode(name, "UTF-8") + "&" + URLEncoder.encode(ch_id, "UTF-8"));
+
                 client = new WebSocketClient(URI.create(WsConfig.URL_WEBSOCKET
-                        + URLEncoder.encode(name, "UTF-8")), new WebSocketClient.Listener() {
+                        + URLEncoder.encode(name, "UTF-8") + "&ch_id=" + URLEncoder.encode(ch_id, "UTF-8")), new WebSocketClient.Listener() {
                     @Override
                     public void onConnect() {
 
@@ -199,7 +206,7 @@ public class Fragment_Chat extends Fragment {
         setUpEmojiPopup();
 
         // Inflate the layout for this fragment
-        ((AppCompatActivity)getActivity()).getSupportActionBar().show();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
 
         return view;
     }
@@ -216,7 +223,7 @@ public class Fragment_Chat extends Fragment {
      * person. flag = new, a new person joined the conversation. flag = message,
      * a new message received from server. flag = exit, somebody left the
      * conversation.
-     * */
+     */
     private void parseMessage(final String msg) {
 
         try {
@@ -281,7 +288,7 @@ public class Fragment_Chat extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if(client != null & client.isConnected()){
+        if (client != null & client.isConnected()) {
             client.disconnect();
         }
     }
@@ -290,14 +297,14 @@ public class Fragment_Chat extends Fragment {
     public void onDestroy() {
         super.onDestroy();
 
-        if(client != null & client.isConnected()){
+        if (client != null & client.isConnected()) {
             client.disconnect();
         }
     }
 
     /**
      * Appending message to list view
-     * */
+     */
     private void appendMessage(final Message m) {
         getActivity().runOnUiThread(new Runnable() {
 
@@ -328,7 +335,7 @@ public class Fragment_Chat extends Fragment {
 
     /**
      * Plays device's default notification sound
-     * */
+     */
     public void playBeep() {
 
         try {

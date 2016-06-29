@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,7 +59,6 @@ public class Fragment_Channellist extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("TAGTAG","http://" + WsConfig.IP + " /ChatroomList.php");
         get_Data("http://" + WsConfig.IP + "/ChatroomList.php");
     }
 
@@ -74,8 +74,14 @@ public class Fragment_Channellist extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ChattingRoom room = (ChattingRoom) Adapter.getItem(position);
-                String room_id = room.getChannel_id();
-                Toast.makeText(ctx, room_id, Toast.LENGTH_SHORT).show();
+                String ch_id = room.getChannel_id();
+
+                Fragment fragment = Fragment_Chat.newInstance(ctx, ch_id);
+                FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+
+                fragmentTransaction.replace(R.id.mainContent, fragment);
+                fragmentTransaction.commit();
+
             }
         });
 
@@ -205,7 +211,6 @@ public class Fragment_Channellist extends Fragment {
 
         @Override
         protected void onPostExecute(String result){
-            Log.d("TAGTAG", result);
             makeChatroom(result);
         }
     }

@@ -80,7 +80,7 @@ public class Activity_Main extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Fragment fragment = Fragment_Chat.newInstance(getApplicationContext());
+        Fragment fragment = Fragment_Chat.newInstance(getApplicationContext(), "default");
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.mainContent, fragment, "fragment_id").commit();
@@ -95,14 +95,14 @@ public class Activity_Main extends AppCompatActivity {
         Fragment fragment = null;
         switch(position) {
             case 0: // Login
-                fragment = Fragment_Login.newInstance(getBaseContext());
+                fragment = (Fragment) Fragment_Login.newInstance(getBaseContext());
                 break;
             case 1: // Chat
                 Fragment tmp_fragment = fragmentManager.findFragmentByTag("fragment_id");
                 if (tmp_fragment != null && tmp_fragment.isVisible()) {
                     break;
                 }
-                fragment = Fragment_Chat.newInstance(getBaseContext());
+                fragment = (Fragment) Fragment_Chat.newInstance(getBaseContext(), "default");
                 break;
             case 2://chatList
                 fragment = (Fragment) Fragment_Channellist.newInstance(getBaseContext());
@@ -112,7 +112,7 @@ public class Activity_Main extends AppCompatActivity {
                 dialog_record.show(getSupportFragmentManager(),"dialog");
                 break;
             case 4: // Voice
-                fragment = Fragment_Stream.newInstance(getBaseContext());
+                fragment = (Fragment) Fragment_Stream.newInstance(getBaseContext());
                 break;
         }
         if(fragment != null) {
