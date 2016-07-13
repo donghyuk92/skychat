@@ -35,7 +35,7 @@ import itm.capstone.skychat.other.WsConfig;
 public class Fragment_Channellist extends Fragment {
 
     Context ctx;
-    private static final String TAG_RESULTS="result";
+    private static final String TAG_RESULTS = "result";
     private static final String TAG_CHANNELID = "channel_id";
     private static final String TAG_CHANNELNAME = "channel_name";
     private static final String TAG_PROGRAMNAME = "program_name";
@@ -64,9 +64,9 @@ public class Fragment_Channellist extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_channellist,container,false) ;
+        View view = inflater.inflate(R.layout.fragment_channellist, container, false);
         //ArrayAdapter Adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1);
-        listview = (ListView) view.findViewById(R.id.chatlist) ;
+        listview = (ListView) view.findViewById(R.id.chatlist);
         //chatroomlist = new ArrayList<ChattingRoom>();
         Adapter = new ListViewAdapter();
 
@@ -82,16 +82,20 @@ public class Fragment_Channellist extends Fragment {
                 fragmentTransaction.replace(R.id.mainContent, fragment);
                 fragmentTransaction.commit();
 
+                SetCurCh setcurch = new SetCurCh();
+                setcurch.execute(ch_id);
+
             }
         });
 
         return view;
     }
-    protected void makeChatroom(String json){
+
+    protected void makeChatroom(String json) {
         try {
             JSONArray jarray = new JSONArray(json);
 
-            for(int i=0;i<jarray.length();i++){
+            for (int i = 0; i < jarray.length(); i++) {
                 JSONObject c = jarray.getJSONObject(i);
                 String c_id = c.getString(TAG_CHANNELID);
                 String c_name = c.getString(TAG_CHANNELNAME);
@@ -112,14 +116,14 @@ public class Fragment_Channellist extends Fragment {
 
     }
 
-    public void get_Data (String url){
+    public void get_Data(String url) {
         GetDataJSON g = new GetDataJSON();
         g.execute(url);
     }
 
     public class ListViewAdapter extends BaseAdapter {
         // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
-        private ArrayList<ChattingRoom> listViewItemList = new ArrayList<ChattingRoom>() ;
+        private ArrayList<ChattingRoom> listViewItemList = new ArrayList<ChattingRoom>();
 
         // ListViewAdapter의 생성자
         public ListViewAdapter() {
@@ -129,7 +133,7 @@ public class Fragment_Channellist extends Fragment {
         // Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
         @Override
         public int getCount() {
-            return listViewItemList.size() ;
+            return listViewItemList.size();
         }
 
         // position에 위치한 데이터를 화면에 출력하는데 사용될 View를 리턴. : 필수 구현
@@ -145,8 +149,8 @@ public class Fragment_Channellist extends Fragment {
             }
 
             // 화면에 표시될 View(Layout이 inflate된)으로부터 위젯에 대한 참조 획득
-            TextView c_name = (TextView) convertView.findViewById(R.id.c_name) ;
-            TextView p_name = (TextView) convertView.findViewById(R.id.p_name) ;
+            TextView c_name = (TextView) convertView.findViewById(R.id.c_name);
+            TextView p_name = (TextView) convertView.findViewById(R.id.p_name);
 
             // Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득
             ChattingRoom chatroom = listViewItemList.get(position);
@@ -159,24 +163,26 @@ public class Fragment_Channellist extends Fragment {
             return convertView;
         }
 
-        public String getChannelId(int position){
+        public String getChannelId(int position) {
             String c_id = listViewItemList.get(position).getChannel_id();
-            return  c_id;
+            return c_id;
         }
+
         // 지정한 위치(position)에 있는 데이터와 관계된 아이템(row)의 ID를 리턴. : 필수 구현
         @Override
         public long getItemId(int position) {
-            return position ;
+            return position;
         }
+
         // 지정한 위치(position)에 있는 데이터 리턴 : 필수 구현
         @Override
         public Object getItem(int position) {
-            return listViewItemList.get(position) ;
+            return listViewItemList.get(position);
         }
 
         // 아이템 데이터 추가를 위한 함수. 개발자가 원하는대로 작성 가능.
-        public void addItem(String channel_id, String channel_name, String program_name, String program_category, String program_stime, String program_etime,String program_cast,String program_summary ) {
-            ChattingRoom item = new ChattingRoom(channel_id,channel_name,program_name,program_category,program_stime,program_etime,program_cast,program_summary);
+        public void addItem(String channel_id, String channel_name, String program_name, String program_category, String program_stime, String program_etime, String program_cast, String program_summary) {
+            ChattingRoom item = new ChattingRoom(channel_id, channel_name, program_name, program_category, program_stime, program_etime, program_cast, program_summary);
 
             listViewItemList.add(item);
         }
@@ -198,19 +204,52 @@ public class Fragment_Channellist extends Fragment {
                 bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
                 String json;
-                while((json = bufferedReader.readLine())!= null){
-                    sb.append(json+"\n");
+                while ((json = bufferedReader.readLine()) != null) {
+                    sb.append(json + "\n");
                 }
 
                 return sb.toString().trim();
 
-            }catch(Exception e){
+            } catch (Exception e) {
                 return null;
             }
         }
 
         @Override
-        protected void onPostExecute(String result){
+        protected void onPostExecute(String result) {
+            makeChatroom(result);
+        }
+    }
+
+    class SetCurCh extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String ch_id = params[0];
+
+            BufferedReader bufferedReader = null;
+            try {
+                URL url = new URL("http://" + WsConfig.IP + "/UpdateCh.php?ch_id=" + ch_id);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                StringBuilder sb = new StringBuilder();
+
+                bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String json;
+                while ((json = bufferedReader.readLine()) != null) {
+                    sb.append(json + "\n");
+                }
+
+                return sb.toString().trim();
+
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
             makeChatroom(result);
         }
     }

@@ -43,9 +43,11 @@ public class WebSocketClient {
 
     private static TrustManager[] sTrustManagers;
 
+    /*
     public static void setTrustManagers(TrustManager[] tm) {
         sTrustManagers = tm;
     }
+    */
 
     public WebSocketClient(URI uri, Listener listener, List<BasicNameValuePair> extraHeaders) {
         mURI          = uri;
