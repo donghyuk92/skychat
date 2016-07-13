@@ -83,6 +83,7 @@ public class Fragment_Channellist extends Fragment {
                 fragmentTransaction.commit();
 
                 SetCurCh setcurch = new SetCurCh();
+                Log.d("TAG", ch_id);
                 setcurch.execute(ch_id);
 
             }

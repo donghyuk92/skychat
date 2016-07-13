@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -34,12 +36,17 @@ import com.vanniktech.emoji.listeners.OnSoftKeyboardOpenListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import info.androidhive.webgroupchat.R;
 import itm.capstone.skychat.other.Message;
@@ -78,6 +85,8 @@ public class Fragment_Chat extends Fragment {
     //private EditText inputMsg;
 
     private WebSocketClient client;
+    private WebSocketClient.Listener SockListener;
+    private String CheckChres;
 
     public Fragment_Chat() {
     }
@@ -125,7 +134,55 @@ public class Fragment_Chat extends Fragment {
         msgadapter = new Adapter_MessagesList(ctx, listMessages);
         listViewMessages.setAdapter(msgadapter);
 
+        SockListener = new WebSocketClient.Listener() {
+            @Override
+            public void onConnect() {
 
+            }
+
+            /**
+             * On receiving the message from web socket server
+             */
+            @Override
+            public void onMessage(String message) {
+                Log.d(TAG, String.format("Got string message! %s", message));
+
+                parseMessage(message);
+
+            }
+
+            @Override
+            public void onMessage(byte[] data) {
+                Log.d(TAG, String.format("Got binary message! %s",
+                        bytesToHex(data)));
+
+                // Message will be in JSON format
+                parseMessage(bytesToHex(data));
+            }
+
+            /**
+             * Called when the connection is terminated
+             */
+            @Override
+            public void onDisconnect(int code, String reason) {
+
+                String message = String.format(Locale.US,
+                        "Disconnected! Code: %d Reason: %s", code, reason);
+
+                showToast(message);
+
+                // clear the session id from shared preferences
+                utils.storeSessionId(null);
+            }
+
+            @Override
+            public void onError(Exception error) {
+                Log.e(TAG, "Error! : " + error);
+
+                showToast("Error! : " + error);
+            }
+
+        };
 
         if (client == null) {
             /**
@@ -133,68 +190,13 @@ public class Fragment_Chat extends Fragment {
              * */
 
             try {
-                Log.d("TAG",WsConfig.URL_WEBSOCKET
-                        + URLEncoder.encode(name, "UTF-8") + "&" + URLEncoder.encode(ch_id, "UTF-8"));
-
-                client = new WebSocketClient(URI.create(WsConfig.URL_WEBSOCKET
-                        + URLEncoder.encode(name, "UTF-8") + "&ch_id=" + URLEncoder.encode(ch_id, "UTF-8")), new WebSocketClient.Listener() {
-                    @Override
-                    public void onConnect() {
-
-                    }
-
-                    /**
-                     * On receiving the message from web socket server
-                     */
-                    @Override
-                    public void onMessage(String message) {
-                        Log.d(TAG, String.format("Got string message! %s", message));
-
-                        parseMessage(message);
-
-                    }
-
-                    @Override
-                    public void onMessage(byte[] data) {
-                        Log.d(TAG, String.format("Got binary message! %s",
-                                bytesToHex(data)));
-
-                        // Message will be in JSON format
-                        parseMessage(bytesToHex(data));
-                    }
-
-                    /**
-                     * Called when the connection is terminated
-                     */
-                    @Override
-                    public void onDisconnect(int code, String reason) {
-
-                        String message = String.format(Locale.US,
-                                "Disconnected! Code: %d Reason: %s", code, reason);
-
-                        showToast(message);
-
-                        // clear the session id from shared preferences
-                        utils.storeSessionId(null);
-                    }
-
-                    @Override
-                    public void onError(Exception error) {
-                        Log.e(TAG, "Error! : " + error);
-
-                        showToast("Error! : " + error);
-                    }
-
-                }, null);
+                client = new WebSocketClient(URI.create(WsConfig.URL_WEBSOCKET + ch_id + "?name="
+                        + URLEncoder.encode(name, "euc-kr")), SockListener, null);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            Log.d("TAG", client.toString());
         }
-        Log.d("TAG", client.toString());
         client.connect();
-        Log.d("TAG", client.toString());
-
         ImageView imageView = (ImageView) view.findViewById(R.id.emoticons);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,6 +209,24 @@ public class Fragment_Chat extends Fragment {
 
         // Inflate the layout for this fragment
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+
+        new Handler().postDelayed(new Runnable() { // new Handler and Runnable
+            @Override
+            public void run() {
+                CheckCh change = new CheckCh();
+                try {
+                    CheckChres = change.execute().get();
+                    Log.d("TAG", CheckChres);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                if(!CheckChres.equals(ch_id)) {
+                    ChangeCh(ch_id);
+                }
+            }
+        },3000);
 
         return view;
     }
@@ -333,6 +353,19 @@ public class Fragment_Chat extends Fragment {
 
     }
 
+    private void ChangeCh(String ch_id) {
+        if(client.isConnected()) {
+            client.disconnect();
+        }
+
+        try {
+            client = new WebSocketClient(URI.create(WsConfig.URL_WEBSOCKET + ch_id + "?name="
+                    + URLEncoder.encode(name, "euc-kr")), SockListener, null);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        client.connect();
+    }
     /**
      * Plays device's default notification sound
      */
@@ -393,5 +426,35 @@ public class Fragment_Chat extends Fragment {
                 emojiPopup.dismiss();
             }
         }).build(emojiEditText);
+    }
+
+    class CheckCh extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            BufferedReader bufferedReader = null;
+            try {
+                URL url = new URL("http://" + WsConfig.IP + "/GettingChannel.php");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                StringBuilder sb = new StringBuilder();
+
+                bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String json;
+                while ((json = bufferedReader.readLine()) != null) {
+                    sb.append(json + "\n");
+                }
+
+                return sb.toString().trim();
+
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+        }
     }
 }
