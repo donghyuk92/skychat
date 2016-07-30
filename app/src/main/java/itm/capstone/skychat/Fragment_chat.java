@@ -1,5 +1,6 @@
 package itm.capstone.skychat;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.Ringtone;
@@ -33,6 +34,7 @@ import com.vanniktech.emoji.listeners.OnEmojiPopupShownListener;
 import com.vanniktech.emoji.listeners.OnSoftKeyboardCloseListener;
 import com.vanniktech.emoji.listeners.OnSoftKeyboardOpenListener;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,6 +48,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 import info.androidhive.webgroupchat.R;
@@ -58,6 +62,8 @@ import itm.capstone.skychat.other.WsConfig;
  */
 public class Fragment_Chat extends Fragment {
 
+    public static final int Dialog = 1;
+
     private String TAG = "TAG";
 
     Context ctx;
@@ -69,6 +75,10 @@ public class Fragment_Chat extends Fragment {
     private EmojiPopup emojiPopup;
     private ImageView emojiButton;
     private ViewGroup rootView;
+    private Fragment_Chat iam = this;
+    private Dialog_ChangeCh dialog_changech;
+    private Boolean Changing = false;
+    private Timer timer;
 
     private Utils utils;
 
@@ -138,6 +148,11 @@ public class Fragment_Chat extends Fragment {
             @Override
             public void onConnect() {
 
+                String message = String.format(Locale.US,
+                        ch_id + "channel is connected!");
+
+                showToast(message);
+
             }
 
             /**
@@ -169,7 +184,7 @@ public class Fragment_Chat extends Fragment {
                 String message = String.format(Locale.US,
                         "Disconnected! Code: %d Reason: %s", code, reason);
 
-                showToast(message);
+                //showToast(message);
 
                 // clear the session id from shared preferences
                 utils.storeSessionId(null);
@@ -210,23 +225,44 @@ public class Fragment_Chat extends Fragment {
         // Inflate the layout for this fragment
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
 
-        new Handler().postDelayed(new Runnable() { // new Handler and Runnable
+        TimerTask timertask = new TimerTask() {
             @Override
             public void run() {
                 CheckCh change = new CheckCh();
                 try {
                     CheckChres = change.execute().get();
-                    Log.d("TAG", CheckChres);
+                    if (CheckChres == null) {
+
+                    } else {
+
+                        Log.d("TAG", CheckChres);
+
+                        JSONArray jarray = new JSONArray(CheckChres);
+                        JSONObject c = jarray.getJSONObject(0);
+                        CheckChres = c.getString("channel_id");
+
+                        if (!CheckChres.equals(ch_id) && !Changing) {
+                            Changing = true;
+                            dialog_changech = Dialog_ChangeCh.newInstance(ctx);
+
+                            dialog_changech.setTargetFragment(iam, Dialog);
+                            dialog_changech.show(getActivity().getSupportFragmentManager().beginTransaction(), "dialog");
+                        }
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
-                }
-                if(!CheckChres.equals(ch_id)) {
-                    ChangeCh(ch_id);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
                 }
             }
-        },3000);
+        };
+
+        timer = new Timer();
+        timer.schedule(timertask, 3000, 10000);
 
         return view;
     }
@@ -270,8 +306,7 @@ public class Fragment_Chat extends Fragment {
                 // number of people online
                 String onlineCount = jObj.getString("onlineCount");
 
-                showToast(name + message + ". Currently " + onlineCount
-                        + " people online!");
+                //showToast(name + message + ". Currently " + onlineCount + " people online!");
 
             } else if (flag.equalsIgnoreCase(TAG_MESSAGE)) {
                 // if the flag is 'message', new message received
@@ -308,17 +343,24 @@ public class Fragment_Chat extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+        timer.cancel();
+        timer.purge();
+        timer=null;
         if (client != null & client.isConnected()) {
             client.disconnect();
+            client = null;
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        timer.cancel();
+        timer.cancel();
+        timer.purge();
         if (client != null & client.isConnected()) {
             client.disconnect();
+            client = null;
         }
     }
 
@@ -354,7 +396,7 @@ public class Fragment_Chat extends Fragment {
     }
 
     private void ChangeCh(String ch_id) {
-        if(client.isConnected()) {
+        if (client.isConnected()) {
             client.disconnect();
         }
 
@@ -366,6 +408,7 @@ public class Fragment_Chat extends Fragment {
         }
         client.connect();
     }
+
     /**
      * Plays device's default notification sound
      */
@@ -435,7 +478,7 @@ public class Fragment_Chat extends Fragment {
 
             BufferedReader bufferedReader = null;
             try {
-                URL url = new URL("http://" + WsConfig.IP + "/GettingChannel.php");
+                URL url = new URL("http://" + WsConfig.IP + "/UserChannel.php");
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 StringBuilder sb = new StringBuilder();
 
@@ -455,6 +498,26 @@ public class Fragment_Chat extends Fragment {
 
         @Override
         protected void onPostExecute(String result) {
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case Dialog:
+                if(resultCode == Activity.RESULT_OK) {
+                    Bundle bundle = data.getExtras();
+                    String res = bundle.getString("changech", "null");
+                    Log.d("TAG", res);
+
+                    dialog_changech.dismiss();
+
+                    if(res.equals("true")) {
+                        ch_id = CheckChres;
+                        ChangeCh(ch_id);
+                    }
+                    Changing = false;
+                }
         }
     }
 }
