@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -46,6 +48,17 @@ public class Activity_Main extends AppCompatActivity {
 
         // Populate the Navigtion Drawer with options
         mDrawerPane = (RelativeLayout) findViewById(R.id.drawerPane);
+        Intent intent = getIntent();
+        TextView name = (TextView) findViewById(R.id.userName);
+        name.setText(intent.getStringExtra("name"));
+        
+        mDrawerPane.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), Activity_Name.class);
+                startActivity(intent);
+            }
+        });
         mDrawerList = (ListView) findViewById(R.id.navList);
         Adapter_DrawerList adapter = new Adapter_DrawerList(this, mNavItems);
         mDrawerList.setAdapter(adapter);
@@ -92,18 +105,14 @@ public class Activity_Main extends AppCompatActivity {
         FragmentTransaction ft = fragmentManager.beginTransaction();
         Fragment fragment = null;
         switch(position) {
-            case 0: // Login
-                Intent intent = new Intent(this, Activity_Name.class);
-                startActivity(intent);
-                break;
-            case 1: // Chat
+            case 0: // Chat
                 Fragment tmp_fragment = fragmentManager.findFragmentByTag("fragment_id");
                 if (tmp_fragment != null && tmp_fragment.isVisible()) {
                     break;
                 }
                 fragment = (Fragment) Fragment_Chat.newInstance(getBaseContext(), "default");
                 break;
-            case 2://chatList
+            case 1://chatList
                 fragment = (Fragment) Fragment_Channellist.newInstance(getBaseContext());
                 break;
         }
