@@ -36,11 +36,10 @@ public class Activity_Main extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-        mNavItems.add(new NavItem("Login", "로그인 하세요", R.drawable.bg_messages));
         mNavItems.add(new NavItem("Chat", "채팅 하세요", R.drawable.drawer_shadow));
         mNavItems.add(new NavItem("ChatList", "채팅방 목록을 보여줍니다", R.drawable.drawer_shadow));
-        mNavItems.add(new NavItem("Mypage", "이벤트", R.drawable.drawer_shadow));
-        mNavItems.add(new NavItem("Event", "보이스", R.drawable.drawer_shadow));
+        mNavItems.add(new NavItem("EVENT", "이벤트", R.drawable.drawer_shadow));
+
 
 
 // DrawerLayout
@@ -94,26 +93,17 @@ public class Activity_Main extends AppCompatActivity {
         FragmentTransaction ft = fragmentManager.beginTransaction();
         Fragment fragment = null;
         switch(position) {
-            case 0: // Login
-                fragment = (Fragment) Fragment_Login.newInstance(getBaseContext());
-                break;
-            case 1: // Chat
+            case 0: // Chat
                 Fragment tmp_fragment = fragmentManager.findFragmentByTag("fragment_id");
                 if (tmp_fragment != null && tmp_fragment.isVisible()) {
                     break;
                 }
                 fragment = (Fragment) Fragment_Chat.newInstance(getBaseContext(), "default");
                 break;
-            case 2://chatList
+            case 1://chatList
                 fragment = (Fragment) Fragment_Channellist.newInstance(getBaseContext());
                 break;
-            case 3: // Event
-                Dialog_Record dialog_record = Dialog_Record.newInstance(getBaseContext());
-                dialog_record.show(getSupportFragmentManager(),"dialog");
-                break;
-            case 4: // Voice
-                fragment = (Fragment) Fragment_Stream.newInstance(getBaseContext());
-                break;
+
         }
         if(fragment != null) {
             ft.addToBackStack(null);

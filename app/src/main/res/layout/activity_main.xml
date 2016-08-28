@@ -28,14 +28,14 @@
             android:id="@+id/profileBox"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:background="@color/abc_search_url_text_normal"
+            android:background="@color/white"
             android:padding="8dp" >
 
             <ImageView
                 android:id="@+id/avatar"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:src="@drawable/ic_launcher"
+                android:src="@drawable/skychati"
                 android:layout_marginTop="15dp" />
 
             <LinearLayout
@@ -50,8 +50,8 @@
                     android:id="@+id/userName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Rishabh"
-                    android:textColor="#fff"
+                    android:text="@string/myname"
+                    android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -61,8 +61,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
                     android:layout_marginTop="4dp"
-                    android:text="View Profile"
-                    android:textColor="#fff"
+                    android:text="@string/changename"
+                    android:textColor="@color/black"
                     android:textSize="12sp" />
             </LinearLayout>
         </RelativeLayout>
@@ -74,7 +74,7 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/profileBox"
             android:choiceMode="singleChoice"
-            android:background="#ffffffff" />
+            android:background="#dddbdb"/>
 
     </RelativeLayout>
 

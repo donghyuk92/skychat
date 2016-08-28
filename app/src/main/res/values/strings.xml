@@ -1,8 +1,11 @@
 <resources>
-    <string name="app_name">WebMobileGroupChat</string>
-    <string name="title">(Android WebSockets Chat App)</string>
-    <string name="author_name">By Ravi Tamada</string>
+    <string name="app_name">스카이챗</string>
+    <string name="title">실시간 모바일 채팅앱</string>
+    <string name="nick">닉네임을 설정해 주세요</string>
+    <string name="author_name">서울과학기술대학교 캡스톤 with SKYLIFE</string>
     <string name="author_url">www.androidhive.info</string>
+    <string name="myname">내닉네임</string>
+    <string name="changename">닉네임변경</string>
     <string name="enter_name">Enter your name</string>
     <string name="btn_join">JOIN</string>
     <string name="btn_send">Send</string>
