@@ -42,6 +42,7 @@ public class Fragment_Name extends Fragment {
             public void onClick(View v) {
                 if (txtName.getText().toString().trim().length() > 0) {
                     Activity_Main.name = txtName.getText().toString().trim();
+                    ((TextView) getActivity().findViewById(R.id.userName)).setText(txtName.getText().toString().trim());
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     FragmentTransaction ft = fragmentManager.beginTransaction();
                     Fragment fragment = null;

@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -39,6 +40,9 @@ public class Activity_Main extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setCustomView(R.layout.actionbar_custom);
+
         mNavItems.add(new NavItem("Chat", "채팅 하세요", R.drawable.drawer_shadow));
         mNavItems.add(new NavItem("ChatList", "채팅방 목록을 보여줍니다", R.drawable.drawer_shadow));
         mNavItems.add(new NavItem("EVENT", "이벤트", R.drawable.drawer_shadow));
@@ -54,6 +58,7 @@ public class Activity_Main extends AppCompatActivity {
                 Fragment fragment = Fragment_Name.newInstance(getApplicationContext());
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.mainContent, fragment, "fragment_name").commit();
+                mDrawerLayout.closeDrawer(mDrawerPane);
             }
         });
         mDrawerList = (ListView) findViewById(R.id.navList);
