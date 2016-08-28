@@ -69,7 +69,6 @@ public class Fragment_Channellist extends Fragment {
         listview = (ListView) view.findViewById(R.id.chatlist);
         //chatroomlist = new ArrayList<ChattingRoom>();
         Adapter = new ListViewAdapter();
-
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -88,14 +87,12 @@ public class Fragment_Channellist extends Fragment {
 
             }
         });
-
         return view;
     }
 
     protected void makeChatroom(String json) {
         try {
             JSONArray jarray = new JSONArray(json);
-
             for (int i = 0; i < jarray.length(); i++) {
                 JSONObject c = jarray.getJSONObject(i);
                 String c_id = c.getString(TAG_CHANNELID);
@@ -108,7 +105,6 @@ public class Fragment_Channellist extends Fragment {
                 String p_summary = c.getString(TAG_PROGRAMSUMMARY);
                 Adapter.addItem(c_id, c_name, p_name, p_cate, p_stime, p_etime, p_cast, p_summary);
             }
-
             listview.setAdapter(Adapter);
 
         } catch (JSONException e) {

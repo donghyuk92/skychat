@@ -8,6 +8,7 @@
         android:id="@+id/chatlist"
         android:layout_width="385dp"
         android:layout_height="513dp"
+        android:background="@drawable/tile_bg"
         android:layout_gravity="center" />
 
 </FrameLayout>
