@@ -208,7 +208,6 @@ public class Fragment_Channellist extends Fragment {
                 while ((json = bufferedReader.readLine()) != null) {
                     sb.append(json + "\n");
                 }
-
                 return sb.toString().trim();
 
             } catch (Exception e) {
@@ -241,9 +240,7 @@ public class Fragment_Channellist extends Fragment {
                 while ((json = bufferedReader.readLine()) != null) {
                     sb.append(json + "\n");
                 }
-
                 return sb.toString().trim();
-
             } catch (Exception e) {
                 return null;
             }
@@ -251,7 +248,6 @@ public class Fragment_Channellist extends Fragment {
 
         @Override
         protected void onPostExecute(String result) {
-            makeChatroom(result);
         }
     }
 }

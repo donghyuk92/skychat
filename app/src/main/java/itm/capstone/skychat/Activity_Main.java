@@ -25,7 +25,7 @@ public class Activity_Main extends AppCompatActivity {
 
 	// LogCat tag
 	private static final String TAG = Activity_Main.class.getSimpleName();
-
+    public static String name;
 
     ListView mDrawerList;
     RelativeLayout mDrawerPane;
@@ -48,14 +48,12 @@ public class Activity_Main extends AppCompatActivity {
 
         // Populate the Navigtion Drawer with options
         mDrawerPane = (RelativeLayout) findViewById(R.id.drawerPane);
-        Intent intent = getIntent();
-        TextView name = (TextView) findViewById(R.id.userName);
-        name.setText(intent.getStringExtra("name"));
-        
         mDrawerPane.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Fragment fragment = Fragment_Name.newInstance(getApplicationContext());
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.mainContent, fragment, "fragment_name").commit();
             }
         });
         mDrawerList = (ListView) findViewById(R.id.navList);
@@ -90,8 +88,7 @@ public class Activity_Main extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Fragment fragment = Fragment_Name.newInstance(getApplicationContext(), "default");
-
+        Fragment fragment = Fragment_Name.newInstance(getApplicationContext());
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.mainContent, fragment, "fragment_name").commit();
 	}
@@ -109,7 +106,7 @@ public class Activity_Main extends AppCompatActivity {
                 if (tmp_fragment != null && tmp_fragment.isVisible()) {
                     break;
                 }
-                fragment = (Fragment) Fragment_Chat.newInstance(getBaseContext(), "default", " ");
+                fragment = (Fragment) Fragment_Chat.newInstance(getBaseContext(), "default");
                 ft.addToBackStack(null);
                 ft.replace(R.id.mainContent, fragment, "fragment_id").commit();
                 break;
@@ -120,9 +117,10 @@ public class Activity_Main extends AppCompatActivity {
                 break;
         }
 
-        mDrawerList.setItemChecked(position, true);
-        setTitle(mNavItems.get(position).mTitle);
-
+        if(fragment != null) {
+            mDrawerList.setItemChecked(position, true);
+            setTitle(mNavItems.get(position).mTitle);
+        }
         // Close the drawer
         mDrawerLayout.closeDrawer(mDrawerPane);
     }

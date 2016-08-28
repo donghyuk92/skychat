@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import info.androidhive.webgroupchat.R;
@@ -23,10 +24,11 @@ public class Fragment_Name extends Fragment {
 
     private Button btnJoin;
     private EditText txtName;
+    private View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_name, container, false);
+        view = inflater.inflate(R.layout.fragment_name, container, false);
 
         btnJoin = (Button) view.findViewById(R.id.btnJoin);
         txtName = (EditText) view.findViewById(R.id.name);
@@ -39,11 +41,11 @@ public class Fragment_Name extends Fragment {
             @Override
             public void onClick(View v) {
                 if (txtName.getText().toString().trim().length() > 0) {
-                    String name = txtName.getText().toString().trim();
+                    Activity_Main.name = txtName.getText().toString().trim();
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     FragmentTransaction ft = fragmentManager.beginTransaction();
                     Fragment fragment = null;
-                    fragment = (Fragment) Fragment_Chat.newInstance(getContext(), "default", name);
+                    fragment = (Fragment) Fragment_Chat.newInstance(getContext(), "default");
                     ft.replace(R.id.mainContent, fragment).commit();
                 } else {
                     Toast.makeText(getContext(),
@@ -55,9 +57,8 @@ public class Fragment_Name extends Fragment {
         return view;
     }
 
-    public static Fragment newInstance(Context ctx, String aDefault) {
-        Fragment_Chat f = new Fragment_Chat();
-        f.ctx = ctx;
+    public static Fragment newInstance(Context ctx) {
+        Fragment_Name f = new Fragment_Name();
         return f;
     }
 }

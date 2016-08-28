@@ -85,7 +85,7 @@ public class Fragment_Chat extends Fragment {
     private String ch_id = null;
 
     // Client name
-    private String name = null;
+    private String name = Activity_Main.name;
 
     // JSON flags to identify the kind of JSON response
     private static final String TAG_SELF = "self", TAG_NEW = "new",
@@ -101,14 +101,10 @@ public class Fragment_Chat extends Fragment {
     public Fragment_Chat() {
     }
 
-    public static Fragment_Chat newInstance(Context ctx, String ch_id, String name) {
+    public static Fragment_Chat newInstance(Context ctx, String ch_id) {
         Fragment_Chat f = new Fragment_Chat();
         f.ch_id = ch_id;
         f.ctx = ctx;
-        f.name = name;
-        Bundle args = new Bundle();
-        args.putString("name", name);
-        f.setArguments(args);
         return f;
     }
 
@@ -353,13 +349,14 @@ public class Fragment_Chat extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        timer.cancel();
-        timer.cancel();
-        timer.purge();
-        if (client != null & client.isConnected()) {
-            client.disconnect();
-            client = null;
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
         }
+//        if (client != null & client.isConnected()) {
+//            client.disconnect();
+//            client = null;
+//        }
     }
 
     /**
