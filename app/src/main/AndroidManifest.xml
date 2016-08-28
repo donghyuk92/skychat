@@ -18,19 +18,13 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name="itm.capstone.skychat.Activity_Name"
-            android:label="@string/app_name"
-            android:windowSoftInputMode="adjustPan">
+            android:name="itm.capstone.skychat.Activity_Main"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name="itm.capstone.skychat.Activity_Main"
-            android:screenOrientation="portrait">
-
         </activity>
     </application>
 </manifest>

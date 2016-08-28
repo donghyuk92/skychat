@@ -101,10 +101,14 @@ public class Fragment_Chat extends Fragment {
     public Fragment_Chat() {
     }
 
-    public static Fragment_Chat newInstance(Context ctx, String ch_id) {
+    public static Fragment_Chat newInstance(Context ctx, String ch_id, String name) {
         Fragment_Chat f = new Fragment_Chat();
         f.ch_id = ch_id;
         f.ctx = ctx;
+        f.name = name;
+        Bundle args = new Bundle();
+        args.putString("name", name);
+        f.setArguments(args);
         return f;
     }
 
@@ -120,10 +124,6 @@ public class Fragment_Chat extends Fragment {
         rootView = (ViewGroup) view.findViewById(R.id.main_activity_root_view);
 
         utils = new Utils(ctx);
-
-        // Getting the person name from previous screen
-        Intent i = getActivity().getIntent();
-        name = i.getStringExtra("name");
 
         btnSend.setOnClickListener(new View.OnClickListener() {
 

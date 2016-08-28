@@ -55,8 +55,7 @@ public class Activity_Main extends AppCompatActivity {
         mDrawerPane.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), Activity_Name.class);
-                startActivity(intent);
+
             }
         });
         mDrawerList = (ListView) findViewById(R.id.navList);
@@ -91,10 +90,10 @@ public class Activity_Main extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Fragment fragment = Fragment_Chat.newInstance(getApplicationContext(), "default");
+        Fragment fragment = Fragment_Name.newInstance(getApplicationContext(), "default");
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.mainContent, fragment, "fragment_id").commit();
+        fragmentManager.beginTransaction().replace(R.id.mainContent, fragment, "fragment_name").commit();
 	}
 
     /** Called when a particular item from the navigation drawer
@@ -110,15 +109,15 @@ public class Activity_Main extends AppCompatActivity {
                 if (tmp_fragment != null && tmp_fragment.isVisible()) {
                     break;
                 }
-                fragment = (Fragment) Fragment_Chat.newInstance(getBaseContext(), "default");
+                fragment = (Fragment) Fragment_Chat.newInstance(getBaseContext(), "default", " ");
+                ft.addToBackStack(null);
+                ft.replace(R.id.mainContent, fragment, "fragment_id").commit();
                 break;
             case 1://chatList
                 fragment = (Fragment) Fragment_Channellist.newInstance(getBaseContext());
+                ft.addToBackStack(null);
+                ft.replace(R.id.mainContent, fragment).commit();
                 break;
-        }
-        if(fragment != null) {
-            ft.addToBackStack(null);
-            ft.replace(R.id.mainContent, fragment).commit();
         }
 
         mDrawerList.setItemChecked(position, true);
