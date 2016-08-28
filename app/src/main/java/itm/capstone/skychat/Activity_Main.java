@@ -43,7 +43,7 @@ public class Activity_Main extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setCustomView(R.layout.actionbar_custom);
 
-        mNavItems.add(new NavItem("Chat", "채팅 하세요", R.drawable.drawer_shadow));
+        mNavItems.add(new NavItem("스카이챗", "채팅 하세요", R.drawable.drawer_shadow));
         mNavItems.add(new NavItem("ChatList", "채팅방 목록을 보여줍니다", R.drawable.drawer_shadow));
         mNavItems.add(new NavItem("EVENT", "이벤트", R.drawable.drawer_shadow));
 

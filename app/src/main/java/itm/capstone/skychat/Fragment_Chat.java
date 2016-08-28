@@ -490,6 +490,7 @@ public class Fragment_Chat extends Fragment {
                     if(res.equals("true")) {
                         ch_id = CheckChres;
                         ChangeCh(ch_id);
+                        listMessages.clear();
                     }
                     Changing = false;
                 }
