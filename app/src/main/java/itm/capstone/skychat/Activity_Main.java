@@ -1,5 +1,6 @@
 package itm.capstone.skychat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -40,9 +41,7 @@ public class Activity_Main extends AppCompatActivity {
         mNavItems.add(new NavItem("ChatList", "채팅방 목록을 보여줍니다", R.drawable.drawer_shadow));
         mNavItems.add(new NavItem("EVENT", "이벤트", R.drawable.drawer_shadow));
 
-
-
-// DrawerLayout
+        // DrawerLayout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
         // Populate the Navigtion Drawer with options
@@ -93,17 +92,20 @@ public class Activity_Main extends AppCompatActivity {
         FragmentTransaction ft = fragmentManager.beginTransaction();
         Fragment fragment = null;
         switch(position) {
-            case 0: // Chat
+            case 0: // Login
+                Intent intent = new Intent(this, Activity_Name.class);
+                startActivity(intent);
+                break;
+            case 1: // Chat
                 Fragment tmp_fragment = fragmentManager.findFragmentByTag("fragment_id");
                 if (tmp_fragment != null && tmp_fragment.isVisible()) {
                     break;
                 }
                 fragment = (Fragment) Fragment_Chat.newInstance(getBaseContext(), "default");
                 break;
-            case 1://chatList
+            case 2://chatList
                 fragment = (Fragment) Fragment_Channellist.newInstance(getBaseContext());
                 break;
-
         }
         if(fragment != null) {
             ft.addToBackStack(null);
